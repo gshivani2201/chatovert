@@ -1,5 +1,7 @@
 // import React from "react";
 
+import moment from "moment";
+
 import { Stack, Avatar, Typography } from "@mui/material";
 import {
   Face as FaceIcon,
@@ -19,13 +21,21 @@ const Profile = () => {
           border: "5px solid white ",
         }}
       />
-      <ProfileCard heading={"Bio"} text={"I am a web developer"} />
+      <ProfileCard
+        heading={"Bio"}
+        text={"I am a web developer"}
+        Icon={<FaceIcon />}
+      />
       <ProfileCard
         heading={"Username"}
         text={"shivani"}
         Icon={<UserNameIcon />}
       />
-      <ProfileCard heading={"Name"} text={"Shivani"} Icon={<FaceIcon />} />
+      <ProfileCard
+        heading={"Joined"}
+        text={moment("2024-03-11T00:00:00.000Z").fromNow()}
+        Icon={<CalendarIcon />}
+      />
     </Stack>
   );
 };
