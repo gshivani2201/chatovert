@@ -9,10 +9,18 @@ import {
 
 // assets
 import { gray, orange } from "../constants/color";
+import { sampleMessage } from "../constants/sampleData";
 
 // Child components
 import AppLayout from "../components/Layout/AppLayout";
 import { InputBox } from "../components/styles/StyledComponents";
+import FileMenu from "../components/dialogs/FileMenu";
+import MessageComponent from "../components/shared/MessageComponent";
+
+const user = {
+  _id: "qwerty",
+  name: "Shivani Gupta",
+};
 
 const Chat = () => {
   const containerRef = useRef(null);
@@ -31,7 +39,9 @@ const Chat = () => {
           overflowY: "auto",
         }}
       >
-        {/* Messages render */}
+        {sampleMessage.map((i) => (
+          <MessageComponent key={i._id} message={i} user={user} />
+        ))}
       </Stack>
 
       <form
@@ -74,6 +84,8 @@ const Chat = () => {
           </IconButton>
         </Stack>
       </form>
+
+      <FileMenu />
     </>
   );
 };
