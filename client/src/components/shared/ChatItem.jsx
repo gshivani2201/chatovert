@@ -1,7 +1,7 @@
 import { memo } from "react";
 
 import { Typography, Stack, Box } from "@mui/material";
-import Aavatar from "./Aavatar";
+import AvatarCard from "./AavatarCard";
 
 // styled components
 import { LinkCompStyled } from "../styles/StyledComponents";
@@ -40,7 +40,7 @@ const ChatItem = ({
           position: "relative",
         }}
       >
-        <Aavatar avatar={avatar} />
+        <AvatarCard avatar={avatar} />
 
         <Stack>
           <Typography>{name}</Typography>

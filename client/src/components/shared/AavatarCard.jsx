@@ -2,8 +2,10 @@
 
 import { Stack, AvatarGroup, Box, Avatar } from "@mui/material";
 
+import { transformImage } from ".././lib/features";
+
 // Todo Transform
-const Aavatar = ({ avatar = [], max = 4 }) => {
+const AvatarCard = ({ avatar = [], max = 4 }) => {
   return (
     <Stack direction={"row"} spacing={"0.5"}>
       <AvatarGroup max={max}>
@@ -11,7 +13,7 @@ const Aavatar = ({ avatar = [], max = 4 }) => {
           {avatar.map((i, index) => (
             <Avatar
               key={Math.random() * 100}
-              src={i}
+              src={transformImage(i)}
               alt={`Avatar ${index}`}
               style={{
                 width: "2rem",
@@ -30,4 +32,4 @@ const Aavatar = ({ avatar = [], max = 4 }) => {
   );
 };
 
-export default Aavatar;
+export default AvatarCard;
