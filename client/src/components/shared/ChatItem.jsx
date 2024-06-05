@@ -1,7 +1,7 @@
 import { memo } from "react";
 
 import { Typography, Stack, Box } from "@mui/material";
-import AvatarCard from "./AavatarCard";
+import AvatarCard from "./AvatarCard";
 
 // styled components
 import { LinkCompStyled } from "../styles/StyledComponents";
