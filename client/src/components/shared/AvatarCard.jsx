@@ -2,13 +2,13 @@
 
 import { Stack, AvatarGroup, Box, Avatar } from "@mui/material";
 
-import { transformImage } from ".././lib/features";
+import { transformImage } from "../lib/features";
 
 // Todo Transform
 const AvatarCard = ({ avatar = [], max = 4 }) => {
   return (
     <Stack direction={"row"} spacing={"0.5"}>
-      <AvatarGroup max={max}>
+      <AvatarGroup max={max} sx={{position: "relative"}}>
         <Box width={"5rem"} height={"3rem"}>
           {avatar.map((i, index) => (
             <Avatar
