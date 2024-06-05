@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, Link as LinkComponent } from "react-router-dom";
+import { useLocation, Link as LinkComponent, Navigate } from "react-router-dom";
 
 import {
   Box,
@@ -46,6 +46,8 @@ const adminTabs = [
   },
 ];
 
+const isAdmin = true;
+
 const AdminLayout = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -56,6 +58,8 @@ const AdminLayout = ({ children }) => {
   const handleClose = () => {
     setIsMobile(false);
   };
+
+  if (!isAdmin) return <Navigate to="/admin" />;
 
   return (
     <Grid container minHeight={"100vh"}>
@@ -130,7 +134,7 @@ const SideBar = ({ w = "100%" }) => {
         <Link onClick={logoutHandler}>
           <Stack direction={"row"} alignItems={"center"} spacing={"1rem"}>
             <ExitToAppIcon />
-            <Typography fontSize={"1.2rem"} >Logout</Typography>
+            <Typography fontSize={"1.2rem"}>Logout</Typography>
           </Stack>
         </Link>
       </Stack>
