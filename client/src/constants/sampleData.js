@@ -152,4 +152,35 @@ export const dashboardData = {
       },
     },
   ],
+  messages: [
+    {
+      attachments: [],
+      content: "NKN VSIDVJID VSDNVSL",
+      _id: "sncnklnvienjvoe",
+      sender: {
+        avatar: "https://www.w3schools.com/howto/img_avatar2.png",
+        name: "John",
+      },
+      chat: "chatId",
+      groupChat: false,
+      createdAt: "2024-02-12T10:41:30.630Z",
+    },
+    {
+      attachments: [
+        {
+          public_id: "efkbefjk 2",
+          url: "https://www.w3schools.com/howto/img_avatar2.png",
+        },
+      ],
+      content: "",
+      _id: "sncnklnvibfenjvoe",
+      sender: {
+        avatar: "https://www.w3schools.com/howto/img_avatar2.png",
+        name: "John 2",
+      },
+      chat: "chatId",
+      groupChat: true,
+      createdAt: "2024-02-12T10:41:30.630Z",
+    },
+  ],
 };
