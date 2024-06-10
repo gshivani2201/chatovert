@@ -1,7 +1,19 @@
 import express from "express";
 
+// 3rd party packages
+import dotenv from "dotenv";
+
 // routes
 import userRoutes from "./routes/user.js";
+import { connectDB } from "./utils/features.js";
+
+dotenv.config({
+  path: "./.env",
+});
+
+const MONGO_URI = process.env.MONGO_URI;
+const port = process.env.PORT || 3000;
+connectDB(MONGO_URI);
 
 const app = express();
 
@@ -9,9 +21,9 @@ app.use("/user", userRoutes);
 
 // default home route
 app.get("/", (req, res) => {
-  res.send("Hello home")
-})
+  res.send("Hello home");
+});
 
-app.listen(3000, () => {
-  console.log("Sever is running on port 3000");
+app.listen(port, () => {
+  console.log(`Sever is running on port ${port}`);
 });
