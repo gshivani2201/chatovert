@@ -17,6 +17,10 @@ connectDB(MONGO_URI);
 
 const app = express();
 
+// Using middlewares
+
+app.use(express.json());          // access json data
+
 app.use("/user", userRoutes);
 
 // default home route
