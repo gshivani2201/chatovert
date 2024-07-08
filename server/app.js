@@ -3,6 +3,9 @@ import express from "express";
 // 3rd party packages
 import dotenv from "dotenv";
 
+// middlewares
+import { errorMiddleware } from "./middlewares/errors.js";
+
 // routes
 import userRoutes from "./routes/user.js";
 import { connectDB } from "./utils/features.js";
@@ -19,7 +22,7 @@ const app = express();
 
 // Using middlewares
 
-app.use(express.json());          // access json data
+app.use(express.json()); // access json data
 
 app.use("/user", userRoutes);
 
@@ -27,6 +30,8 @@ app.use("/user", userRoutes);
 app.get("/", (req, res) => {
   res.send("Hello home");
 });
+
+app.use(errorMiddleware);
 
 app.listen(port, () => {
   console.log(`Sever is running on port ${port}`);
