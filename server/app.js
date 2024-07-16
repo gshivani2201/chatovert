@@ -7,9 +7,11 @@ import cookieParser from "cookie-parser";
 // middlewares
 import { errorMiddleware } from "./middlewares/errors.js";
 
+import { connectDB } from "./utils/features.js";
+
 // routes
 import userRoutes from "./routes/user.js";
-import { connectDB } from "./utils/features.js";
+import chatRoutes from "./routes/chat.js";
 
 dotenv.config({
   path: "./.env",
@@ -27,6 +29,7 @@ app.use(express.json()); // access json data
 app.use(cookieParser());
 
 app.use("/user", userRoutes);
+app.use("/chat", chatRoutes);
 
 // default home route
 app.get("/", (req, res) => {
