@@ -2,6 +2,7 @@ import express from "express";
 
 // 3rd party packages
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 // middlewares
 import { errorMiddleware } from "./middlewares/errors.js";
@@ -23,6 +24,7 @@ const app = express();
 // Using middlewares
 
 app.use(express.json()); // access json data
+app.use(cookieParser());
 
 app.use("/user", userRoutes);
 
