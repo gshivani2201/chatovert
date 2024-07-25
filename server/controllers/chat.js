@@ -4,7 +4,7 @@ import { ErrorHandler } from "../utils/utility.js";
 import { Chat } from "../models/chat.js";
 import { User } from "../models/user.js";
 import { Message } from "../models/message.js";
-import { emitEvent } from "../utils/features.js";
+import { deleteFilesFromCloudinary, emitEvent } from "../utils/features.js";
 import {
   ALERT,
   NEW_ATTACHMENT,
@@ -326,6 +326,51 @@ const renameGroup = TryCatch(async (req, res, next) => {
   });
 });
 
+const deleteChat = TryCatch(async (req, res, next) => {
+  const chatId = req.params.id;
+  const chat = await Chat.findById(chatId);
+
+  if (!chat) return next(new ErrorHandler("Chat not found", 404));
+
+  const members = chat.members;
+
+  if (chat.groupChat && chat.creator.toString() !== req.user.toString())
+    return next(
+      new ErrorHandler("You are not allowed to delete the group", 403)
+    );
+
+  if (!chat.groupChat && !chat.members.includes(req.user.toString())) {
+    return next(
+      new ErrorHandler("You are not allowed to delete the chat", 403)
+    );
+  }
+
+  const messagesWithAttachments = await Message.find({
+    chat: chatId,
+    attachments: { $exists: true, $ne: [] },
+  });
+
+  const public_ids = [];
+
+  messagesWithAttachments.forEach(({ attachments }) =>
+    attachments.forEach(({ public_id }) => public_ids.push(public_id))
+  );
+
+  await Promise.all([
+    // delete files from cloudinary
+    deleteFilesFromCloudinary(public_ids),
+    Chat.deleteOne(),
+    Message.deleteMany({ chat: chatId }),
+  ]);
+
+  emitEvent(req, REFETCH_CHATS, members);
+
+  return res.status(200).json({
+    success: true,
+    message: "Chat deleted successfully",
+  });
+});
+
 export {
   newGroupChat,
   getMyChats,
@@ -335,5 +380,6 @@ export {
   leaveGroup,
   sendAttachments,
   getChatDetails,
-  renameGroup
+  renameGroup,
+  deleteChat,
 };
