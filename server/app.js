@@ -8,7 +8,6 @@ import cookieParser from "cookie-parser";
 import { errorMiddleware } from "./middlewares/errors.js";
 
 import { connectDB } from "./utils/features.js";
-import { createUser } from "./seeders/user.js";
 
 // routes
 import userRoutes from "./routes/user.js";
