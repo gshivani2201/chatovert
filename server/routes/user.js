@@ -1,13 +1,22 @@
 import express from "express";
 
 // controllers
-import { getMyProfile, login, logout, newUser, searchUser } from "../controllers/user.js";
+import {
+  getMyProfile,
+  login,
+  logout,
+  newUser,
+  searchUser,
+} from "../controllers/user.js";
+
+// middlewares
 import { singleAvatar } from "../middlewares/multer.js";
 import { isAuthenticated } from "../middlewares/auth.js";
+import { registerValidator, validationHandler } from "../lib/validators.js";
 
 const app = express.Router();
 
-app.post("/new", singleAvatar, newUser);
+app.post("/new", singleAvatar, registerValidator(), validationHandler, newUser);
 app.post("/login", login);
 
 app.use(isAuthenticated);
