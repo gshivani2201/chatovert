@@ -1,4 +1,4 @@
-import { body, validationResult, check } from "express-validator";
+import { body, validationResult, check, param, query } from "express-validator";
 
 import { ErrorHandler } from "../utils/utility.js";
 
@@ -19,7 +19,7 @@ const registerValidator = () => [
   body("username", "Please enter username").notEmpty(),
   body("password", "Please enter password").notEmpty(),
   body("bio", "Please enter bio").notEmpty(),
-  check("avatar", "Please uploade Avatar").notEmpty(),
+  check("avatar", "Please upload Avatar").notEmpty(),
 ];
 
 const loginValidator = () => [
@@ -36,14 +36,44 @@ const newGroupValidator = () => [
     .withMessage("Members must be 2-100"),
 ];
 
-// const loginValidator = () => [
-//   body("username", "Please enter username").notEmpty(),
-//   body("password", "Please enter password").notEmpty(),
-// ];
+const addMemberValidator = () => [
+  body("chatId", "Please enter chat id").notEmpty(),
+  body("members")
+    .notEmpty()
+    .withMessage("Please enter members")
+    .isArray({ min: 1, max: 97 })
+    .withMessage("Members must be 1-97"),
+];
+
+const removeMemberValidator = () => [
+  body("chatId", "Please enter chat id").notEmpty(),
+  body("userId", "Please enter user id").notEmpty(),
+];
+
+const sendAttachmentsValidator = () => [
+  body("chatId", "Please enter chat id").notEmpty(),
+  check("files")
+    .notEmpty()
+    .withMessage("Please upload attachments")
+    .isArray({ min: 1, max: 5 })
+    .withMessage("Members must be 1-5"),
+];
+
+const chatIdValidator = () => [param("id", "Please enter chat id").notEmpty()];
+
+const renameChatValidator = () => [
+  param("id", "Please enter chat id").notEmpty(),
+  body("name", "Please enter name").notEmpty(),
+];
 
 export {
   registerValidator,
   validationHandler,
   loginValidator,
   newGroupValidator,
+  addMemberValidator,
+  removeMemberValidator,
+  sendAttachmentsValidator,
+  chatIdValidator,
+  renameChatValidator,
 };
