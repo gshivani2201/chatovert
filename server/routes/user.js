@@ -7,12 +7,18 @@ import {
   logout,
   newUser,
   searchUser,
+  sendFriendRequest,
 } from "../controllers/user.js";
 
 // middlewares
 import { singleAvatar } from "../middlewares/multer.js";
 import { isAuthenticated } from "../middlewares/auth.js";
-import { loginValidator, registerValidator, validationHandler } from "../lib/validators.js";
+import {
+  loginValidator,
+  registerValidator,
+  sendRequestValidator,
+  validationHandler,
+} from "../lib/validators.js";
 
 const app = express.Router();
 
@@ -24,5 +30,12 @@ app.use(isAuthenticated);
 app.get("/me", getMyProfile);
 app.get("/logout", logout);
 app.get("/search", searchUser);
+
+app.put(
+  "/sendrequest",
+  sendRequestValidator(),
+  validationHandler,
+  sendFriendRequest
+);
 
 export default app;

@@ -1,9 +1,12 @@
 import { compare } from "bcrypt";
+
 import { User } from "../models/user.js";
 import { Chat } from "../models/chat.js";
-import { cookieOptions, sendToken } from "../utils/features.js";
+import { Request } from "../models/request.js";
+import { cookieOptions, emitEvent, sendToken } from "../utils/features.js";
 import { ErrorHandler } from "../utils/utility.js";
 import { TryCatch } from "../middlewares/errors.js";
+import { NEW_REQUEST } from "../constants/events.js";
 
 const newUser = async (req, res) => {
   const { name, username, password, bio } = req.body;
@@ -91,4 +94,29 @@ const searchUser = TryCatch(async (req, res) => {
   });
 });
 
-export { login, newUser, getMyProfile, logout, searchUser };
+const sendFriendRequest = TryCatch(async (req, res) => {
+  const { userId } = req.body;
+
+  const request = await Request.findOne({
+    $or: [
+      { sender: req.user, receiver: userId },
+      { sender: userId, receiver: req.user },
+    ],
+  });
+
+  if (request) return next(new ErrorHandler("Request already sent", 400));
+
+  await Request.create({
+    sender: req.user,
+    receiver: userId,
+  });
+
+  emitEvent(req, NEW_REQUEST, [userId]);
+
+  return res.status(200).json({
+    success: true,
+    message: "Request sent successfully",
+  });
+});
+
+export { login, newUser, getMyProfile, logout, searchUser, sendFriendRequest };
