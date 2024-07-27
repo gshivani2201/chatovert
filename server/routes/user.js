@@ -12,12 +12,12 @@ import {
 // middlewares
 import { singleAvatar } from "../middlewares/multer.js";
 import { isAuthenticated } from "../middlewares/auth.js";
-import { registerValidator, validationHandler } from "../lib/validators.js";
+import { loginValidator, registerValidator, validationHandler } from "../lib/validators.js";
 
 const app = express.Router();
 
 app.post("/new", singleAvatar, registerValidator(), validationHandler, newUser);
-app.post("/login", login);
+app.post("/login", loginValidator(), validationHandler, login);
 
 app.use(isAuthenticated);
 
