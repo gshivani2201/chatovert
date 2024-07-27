@@ -3,6 +3,7 @@ import express from "express";
 // controllers
 import {
   acceptFriendRequest,
+  getMyNotifications,
   getMyProfile,
   login,
   logout,
@@ -46,5 +47,7 @@ app.put(
   validationHandler,
   acceptFriendRequest
 );
+
+app.get("/notifications", getMyNotifications);
 
 export default app;
