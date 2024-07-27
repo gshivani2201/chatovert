@@ -48,8 +48,10 @@ const login = async (req, res, next) => {
   }
 };
 
-const getMyProfile = TryCatch(async (req, res) => {
+const getMyProfile = TryCatch(async (req, res, next) => {
   const user = await User.findById(req.user);
+
+  if (!user) return next(new ErrorHandler("User not found", 404));
 
   res.status(200).json({
     success: true,
@@ -94,7 +96,7 @@ const searchUser = TryCatch(async (req, res) => {
   });
 });
 
-const sendFriendRequest = TryCatch(async (req, res) => {
+const sendFriendRequest = TryCatch(async (req, res, next) => {
   const { userId } = req.body;
 
   const request = await Request.findOne({
@@ -119,7 +121,7 @@ const sendFriendRequest = TryCatch(async (req, res) => {
   });
 });
 
-const acceptFriendRequest = TryCatch(async (req, res) => {
+const acceptFriendRequest = TryCatch(async (req, res, next) => {
   const { requestId, accept } = req.body;
 
   const request = await Request.findById(requestId)
@@ -128,7 +130,7 @@ const acceptFriendRequest = TryCatch(async (req, res) => {
 
   if (!request) return next(new ErrorHandler("Request not found", 404));
 
-  if (request.receiver.toString() !== req.user.toString())
+  if (request.receiver._id.toString() !== req.user.toString())
     return next(new ErrorHandler("You are not authorized to accept this", 401));
 
   if (accept) {
