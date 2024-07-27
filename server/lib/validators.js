@@ -70,6 +70,15 @@ const sendRequestValidator = () => [
   body("userId", "Please enter user id").notEmpty(),
 ];
 
+const acceptRequestValidator = () => [
+  body("requestId", "Please enter request id").notEmpty(),
+  body("accept")
+    .notEmpty()
+    .withMessage("Please add accept")
+    .isBoolean()
+    .withMessage("Accept must be a boolean"),
+];
+
 export {
   registerValidator,
   validationHandler,
@@ -80,5 +89,6 @@ export {
   sendAttachmentsValidator,
   chatIdValidator,
   renameChatValidator,
-  sendRequestValidator
+  sendRequestValidator,
+  acceptRequestValidator,
 };
