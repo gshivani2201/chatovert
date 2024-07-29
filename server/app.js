@@ -3,6 +3,8 @@ import express from "express";
 // 3rd party packages
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import { Server } from "socket.io";
+import { createServer } from "http";
 
 // middlewares
 import { errorMiddleware } from "./middlewares/errors.js";
@@ -26,6 +28,8 @@ const adminSecretKey = process.env.ADMIN_SECRET_KEY || "demonslayer";
 connectDB(MONGO_URI);
 
 const app = express();
+const server = createServer(app);
+const io = new Server(server, {});
 
 // Using middlewares
 
@@ -41,9 +45,17 @@ app.get("/", (req, res) => {
   res.send("Hello home");
 });
 
+io.on("connection", (socket) => {
+  console.log("user connected", socket.id);
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+
 app.use(errorMiddleware);
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Sever is running on port ${port} in ${envMode} mode`);
 });
 
