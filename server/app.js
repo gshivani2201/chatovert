@@ -12,6 +12,7 @@ import { connectDB } from "./utils/features.js";
 // routes
 import userRoutes from "./routes/user.js";
 import chatRoutes from "./routes/chat.js";
+import adminRoutes from  "./routes/admin.js"
 
 dotenv.config({
   path: "./.env",
@@ -19,6 +20,8 @@ dotenv.config({
 
 const MONGO_URI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
+export const adminSecretKey = process.env.ADMIN_SECRET_KEY || "demonslayer";
+
 connectDB(MONGO_URI);
 
 const app = express();
@@ -30,6 +33,7 @@ app.use(cookieParser());
 
 app.use("/user", userRoutes);
 app.use("/chat", chatRoutes);
+app.use("/admin", adminRoutes);
 
 // default home route
 app.get("/", (req, res) => {
