@@ -12,7 +12,7 @@ import { connectDB } from "./utils/features.js";
 // routes
 import userRoutes from "./routes/user.js";
 import chatRoutes from "./routes/chat.js";
-import adminRoutes from  "./routes/admin.js"
+import adminRoutes from "./routes/admin.js";
 
 dotenv.config({
   path: "./.env",
@@ -20,7 +20,8 @@ dotenv.config({
 
 const MONGO_URI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
-export const adminSecretKey = process.env.ADMIN_SECRET_KEY || "demonslayer";
+const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
+const adminSecretKey = process.env.ADMIN_SECRET_KEY || "demonslayer";
 
 connectDB(MONGO_URI);
 
@@ -43,5 +44,7 @@ app.get("/", (req, res) => {
 app.use(errorMiddleware);
 
 app.listen(port, () => {
-  console.log(`Sever is running on port ${port}`);
+  console.log(`Sever is running on port ${port} in ${envMode} mode`);
 });
+
+export { envMode, adminSecretKey };

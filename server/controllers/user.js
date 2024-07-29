@@ -9,8 +9,13 @@ import { TryCatch } from "../middlewares/errors.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
 import { getOtherMember } from "../lib/helper.js";
 
-const newUser = async (req, res) => {
+const newUser = TryCatch(async (req, res, next) => {
   const { name, username, password, bio } = req.body;
+
+  const file = req.file;
+
+  if (!file) return next(new ErrorHandler("Please upload avatar", 400));
+
   const avatar = {
     public_id: "abjk",
     url: "akln",
@@ -25,29 +30,25 @@ const newUser = async (req, res) => {
   });
 
   sendToken(res, user, 201, "User created successfully!");
-};
+});
 
-const login = async (req, res, next) => {
-  try {
-    const { username, password } = req.body;
+const login = TryCatch(async (req, res, next) => {
+  const { username, password } = req.body;
 
-    const user = await User.findOne({ username }).select("+password");
+  const user = await User.findOne({ username }).select("+password");
 
-    if (!user) {
-      return next(new ErrorHandler("Invalid Username", 404));
-    }
-
-    const isMatch = await compare(password, user.password);
-
-    if (!isMatch) {
-      return next(new ErrorHandler("Invalid Password", 404));
-    }
-
-    sendToken(res, user, 200, "Login successful.");
-  } catch (error) {
-    next(error);
+  if (!user) {
+    return next(new ErrorHandler("Invalid Username", 404));
   }
-};
+
+  const isMatch = await compare(password, user.password);
+
+  if (!isMatch) {
+    return next(new ErrorHandler("Invalid Password", 404));
+  }
+
+  sendToken(res, user, 200, "Login successful.");
+});
 
 const getMyProfile = TryCatch(async (req, res, next) => {
   const user = await User.findById(req.user);
