@@ -1,5 +1,8 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import axios from "axios";
+
+import { server } from "./constants/config";
 
 // child components
 import ProtectRoute from "./components/auth/ProtectRoute";
@@ -20,6 +23,13 @@ const UserManagement = lazy(() => import("./pages/admin/UserManagement"));
 let user = true;
 
 const App = () => {
+  useEffect(() => {
+    axios
+      .get(`${server}/api/v1/user/me`)
+      .then((res) => console.log(res))
+      .catch((error) => console.error(error));
+  }, []);
+
   return (
     <BrowserRouter>
       <Suspense fallback={<Loader />}>

@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { v4 as uuid } from "uuid";
+import cors from "cors";
 
 // middlewares
 import { errorMiddleware } from "./middlewares/errors.js";
@@ -41,10 +42,16 @@ const io = new Server(server, {});
 
 app.use(express.json()); // access json data
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:4173", process.env.CLIENT_URL],
+    credentials: true,
+  })
+);
 
-app.use("/user", userRoutes);
-app.use("/chat", chatRoutes);
-app.use("/admin", adminRoutes);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/chat", chatRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 // default home route
 app.get("/", (req, res) => {
