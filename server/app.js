@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import { v4 as uuid } from "uuid";
 import cors from "cors";
+import { v2 as cloudinary } from "cloudinary";
 
 // middlewares
 import { errorMiddleware } from "./middlewares/errors.js";
@@ -34,6 +35,12 @@ const userSocketIDs = new Map();
 
 connectDB(MONGO_URI);
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {});
@@ -44,7 +51,11 @@ app.use(express.json()); // access json data
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:4173", process.env.CLIENT_URL],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:4173",
+      process.env.CLIENT_URL,
+    ],
     credentials: true,
   })
 );
