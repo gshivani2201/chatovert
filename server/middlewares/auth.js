@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 import { ErrorHandler } from "../utils/utility.js";
 import { adminSecretKey } from "../app.js";
+import { TryCatch } from "./errors.js";
 
-const isAuthenticated = (req, res, next) => {
+const isAuthenticated = TryCatch((req, res, next) => {
   const token = req.cookies["app-token"];
 
   if (!token)
@@ -13,7 +14,7 @@ const isAuthenticated = (req, res, next) => {
   req.user = decodedData._id;
 
   next();
-};
+});
 
 const adminOnly = (req, res, next) => {
   const token = req.cookies["chatovert-admin-token"];

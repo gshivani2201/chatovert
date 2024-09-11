@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 
 import { useFileHandler, useInputValidation } from "6pp";
+import axios from "axios";
+import toast from "react-hot-toast";
 import {
   Container,
   Paper,
@@ -13,8 +16,11 @@ import {
 } from "@mui/material";
 import { CameraAlt as CameraAltIcon } from "@mui/icons-material";
 
+import { userExists } from "../redux/reducers/auth";
+
 // utils
 import { usernameValidator } from "../utils/validators";
+import { server } from "../constants/config";
 
 // assets
 import { bgGradient } from "../constants/color";
@@ -31,23 +37,76 @@ const Login = () => {
   const bio = useInputValidation("");
 
   const avatar = useFileHandler("single");
+  const dispatch = useDispatch();
 
   const toggleLogin = () => {
     setIsLogin(!isLogin);
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("avatar", avatar.file);
+    formData.append("name", name.value);
+    formData.append("bio", bio.value);
+    formData.append("username", username.value);
+    formData.append("password", password.value);
+
+    const config = {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/new`,
+        formData,
+        config
+      );
+
+      dispatch(userExists(true));
+      toast(data.message);
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    }
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+
+    const config = {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    try {
+      const { data } = await axios.post(
+        `${server}/api/v1/user/login`,
+        {
+          username: username.value,
+          password: password.value,
+        },
+        config
+      );
+
+      dispatch(userExists(true));
+      toast.success(data.message);
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || "Something went wrong");
+    }
   };
 
   return (
     <div
       style={{
-        backgroundImage: bgGradient
+        backgroundImage: bgGradient,
       }}
     >
       <Container

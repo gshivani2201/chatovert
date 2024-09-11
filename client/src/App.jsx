@@ -1,7 +1,10 @@
 import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import axios from "axios";
+import { Toaster } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 
+import { userNotExists } from "./redux/reducers/auth";
 import { server } from "./constants/config";
 
 // child components
@@ -20,17 +23,20 @@ const ChatManagement = lazy(() => import("./pages/admin/ChatManagement"));
 const MessageManagement = lazy(() => import("./pages/admin/MessageManagement"));
 const UserManagement = lazy(() => import("./pages/admin/UserManagement"));
 
-let user = true;
-
 const App = () => {
+  const { user, loader } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     axios
       .get(`${server}/api/v1/user/me`)
       .then((res) => console.log(res))
-      .catch((error) => console.error(error));
-  }, []);
+      .catch((error) => dispatch(userNotExists()));
+  }, [dispatch]);
 
-  return (
+  return loader ? (
+    <Loader />
+  ) : (
     <BrowserRouter>
       <Suspense fallback={<Loader />}>
         <Routes>
@@ -57,6 +63,8 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+
+      <Toaster position="bottom-center" />
     </BrowserRouter>
   );
 };
