@@ -4,7 +4,7 @@ import axios from "axios";
 import { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 
-import { userNotExists } from "./redux/reducers/auth";
+import { userExists, userNotExists } from "./redux/reducers/auth";
 import { server } from "./constants/config";
 
 // child components
@@ -29,8 +29,8 @@ const App = () => {
 
   useEffect(() => {
     axios
-      .get(`${server}/api/v1/user/me`)
-      .then((res) => console.log(res))
+      .get(`${server}/api/v1/user/me`, { withCredentials: true })
+      .then(({ data }) => dispatch(userExists(data.user)))
       .catch((error) => dispatch(userNotExists()));
   }, [dispatch]);
 

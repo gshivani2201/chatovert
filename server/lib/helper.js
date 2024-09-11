@@ -11,4 +11,4 @@ export const getSockets = (users = []) => {
 };
 
 export const getBase64 = (file) =>
-  `data${file.mimetype};base64,${file.buffer.toString("base64")}`;
+  `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;

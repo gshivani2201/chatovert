@@ -62,7 +62,7 @@ const Login = () => {
 
     try {
       const { data } = await axios.post(
-        `${server}/api/v1/new`,
+        `${server}/api/v1/user/new`,
         formData,
         config
       );
