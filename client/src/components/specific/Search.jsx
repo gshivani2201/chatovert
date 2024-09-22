@@ -17,7 +17,13 @@ import { Search as SearchIcon } from "@mui/icons-material";
 import { setIsSearch } from "../../redux/reducers/misc";
 
 // api
-import { useLazySearchUserQuery } from "../../redux/reducers/api";
+import {
+  useLazySearchUserQuery,
+  useSendFriendRequestMutation,
+} from "../../redux/reducers/api";
+
+// hooks
+import { useAsyncMutation } from "../../hooks/hook";
 
 // child components
 import UserItem from "../shared/UserItem";
@@ -28,8 +34,10 @@ const Search = () => {
 
   const { isSearch } = useSelector((state) => state.misc);
   const [searchUser] = useLazySearchUserQuery();
+  const [sendFriendRequest, isLoadingSendFriendRequest] = useAsyncMutation(
+    useSendFriendRequestMutation
+  );
 
-  let isLoadingSendFriendRequest = false;
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
@@ -44,8 +52,8 @@ const Search = () => {
     };
   }, [searchVal.value]);
 
-  const addFriendHandler = (id) => {
-    console.log(id);
+  const addFriendHandler = async (id) => {
+    await sendFriendRequest("Sending friend request", { userId: id });
   };
 
   const searchCloseHandler = () => dispatch(setIsSearch(false));
