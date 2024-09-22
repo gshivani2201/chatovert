@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { useInputValidation } from "6pp";
 
@@ -12,23 +13,45 @@ import {
 } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
 
+// actions
+import { setIsSearch } from "../../redux/reducers/misc";
+
+// api
+import { useLazySearchUserQuery } from "../../redux/reducers/api";
+
 // child components
 import UserItem from "../shared/UserItem";
 
-import { sampleUsers } from "../../constants/sampleData";
-
 const Search = () => {
   const searchVal = useInputValidation("");
+  const dispatch = useDispatch();
+
+  const { isSearch } = useSelector((state) => state.misc);
+  const [searchUser] = useLazySearchUserQuery();
 
   let isLoadingSendFriendRequest = false;
-  const [users, setUsers] = useState(sampleUsers);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const timeOutId = setTimeout(() => {
+      searchUser(searchVal.value)
+        .then(({ data }) => setUsers(data.users))
+        .catch((e) => console.log(e));
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeOutId);
+    };
+  }, [searchVal.value]);
 
   const addFriendHandler = (id) => {
     console.log(id);
   };
 
+  const searchCloseHandler = () => dispatch(setIsSearch(false));
+
   return (
-    <Dialog open>
+    <Dialog open={isSearch} onClose={searchCloseHandler}>
       <Stack p={"2rem"} direction={"column"} width={"25rem"}>
         <DialogTitle textAlign={"center"}>Find People</DialogTitle>
         <TextField
