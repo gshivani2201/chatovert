@@ -18,5 +18,17 @@ module.exports = {
     //   "warn",
     //   { allowConstantExport: true },
     // ],
+    semi: ["error", "always"], // Enforces semicolons
+    "react/display-name": "off",
+    "no-unused-vars": [
+      "error",
+      {
+        vars: "all",
+        args: "after-used",
+        caughtErrors: "all",
+        ignoreRestSiblings: false,
+        reportUsedIgnorePattern: false,
+      },
+    ],
   },
 };

@@ -2,7 +2,7 @@ import { Suspense, lazy, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   AppBar,
@@ -23,6 +23,7 @@ import {
 } from "@mui/icons-material";
 
 import { userNotExists } from "../../redux/reducers/auth";
+import { setIsMobileMenu, setIsSearch } from "../../redux/reducers/misc";
 
 // assets
 import { orange } from "../../constants/color";
@@ -33,20 +34,22 @@ const NotificationsDialog = lazy(() => import("../specific/Notifications"));
 const NewGroupDialog = lazy(() => import("../specific/NewGroup"));
 
 const Header = () => {
-  const [isSearch, setIsSearch] = useState(false);
   const [isNotifs, setIsNotifs] = useState(false);
   const [isNewGroup, setIsNewGroup] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { isSearch } = useSelector((state) => state.misc);
+
   const handleMobile = () => {
     console.log("handle mobile");
+    dispatch(setIsMobileMenu(true));
   };
 
   const openSearchDialog = () => {
-    setIsSearch((prev) => !prev);
     console.log("search mobile");
+    dispatch(setIsSearch(true));
   };
 
   const openNewGroup = () => {
