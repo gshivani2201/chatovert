@@ -23,7 +23,11 @@ import {
 } from "@mui/icons-material";
 
 import { userNotExists } from "../../redux/reducers/auth";
-import { setIsMobileMenu, setIsSearch } from "../../redux/reducers/misc";
+import {
+  setIsMobileMenu,
+  setIsNotification,
+  setIsSearch,
+} from "../../redux/reducers/misc";
 
 // assets
 import { orange } from "../../constants/color";
@@ -34,13 +38,12 @@ const NotificationsDialog = lazy(() => import("../specific/Notifications"));
 const NewGroupDialog = lazy(() => import("../specific/NewGroup"));
 
 const Header = () => {
-  const [isNotifs, setIsNotifs] = useState(false);
   const [isNewGroup, setIsNewGroup] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { isSearch } = useSelector((state) => state.misc);
+  const { isSearch, isNotification } = useSelector((state) => state.misc);
 
   const handleMobile = () => {
     console.log("handle mobile");
@@ -74,10 +77,7 @@ const Header = () => {
     }
   };
 
-  const openNotification = () => {
-    setIsNotifs((prev) => !prev);
-    console.log("open notification");
-  };
+  const openNotification = () => dispatch(setIsNotification(true));
 
   return (
     <>
@@ -143,7 +143,7 @@ const Header = () => {
         </Suspense>
       )}
 
-      {isNotifs && (
+      {isNotification && (
         <Suspense fallback={<Backdrop open />}>
           <NotificationsDialog />
         </Suspense>

@@ -1,3 +1,4 @@
+import { useDispatch, useSelector } from "react-redux";
 import { memo } from "react";
 
 import {
@@ -8,22 +9,39 @@ import {
   ListItem,
   Avatar,
   Button,
+  Skeleton,
 } from "@mui/material";
 
-import { sampleNotifications } from "../../constants/sampleData";
+// apis
+import { useGetNotificationsQuery } from "../../redux/reducers/api";
+import { setIsNotification } from "../../redux/reducers/misc";
+
+// hooks
+import { useErrors } from "../../hooks/hook";
 
 const Notifications = () => {
+  const dispatch = useDispatch();
+  const { isNotification } = useSelector((state) => state.misc);
+
+  const { isLoading, data, error, isError } = useGetNotificationsQuery();
+
+  useErrors([{ error, isError }]);
+
   const friendRequestHandler = ({ _id, accept }) => {
     // Add friend request Handler
   };
 
+  const closeHandler = () => dispatch(setIsNotification(false));
+
   return (
-    <Dialog open>
+    <Dialog open={isNotification} onClose={closeHandler}>
       <Stack p={{ xs: "1rem", sm: "2rem" }} maxWidth={"25rem"}>
         <DialogTitle>Notifications</DialogTitle>
 
-        {sampleNotifications.length > 0 ? (
-          sampleNotifications.map((i) => (
+        {isLoading ? (
+          <Skeleton />
+        ) : data?.notifications.length > 0 ? (
+          data.notifications.map((i) => (
             <NotificationItem
               key={i._id}
               sender={i.sender}
@@ -57,7 +75,7 @@ const NotificationItem = memo(({ sender, _id, handler }) => {
           sx={{
             overflow: "hidden",
             textOverflow: "ellipsis",
-            whiteSpace: "nowrap"
+            whiteSpace: "nowrap",
           }}
         >
           {`${name} sent you a friend request. `}
