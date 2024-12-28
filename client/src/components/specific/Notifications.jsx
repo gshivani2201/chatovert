@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { memo } from "react";
+import toast from "react-hot-toast";
 
 import {
   Dialog,
@@ -13,7 +14,10 @@ import {
 } from "@mui/material";
 
 // apis
-import { useGetNotificationsQuery } from "../../redux/reducers/api";
+import {
+  useAcceptFriendRequestMutation,
+  useGetNotificationsQuery,
+} from "../../redux/reducers/api";
 import { setIsNotification } from "../../redux/reducers/misc";
 
 // hooks
@@ -27,8 +31,23 @@ const Notifications = () => {
 
   useErrors([{ error, isError }]);
 
-  const friendRequestHandler = ({ _id, accept }) => {
-    // Add friend request Handler
+  const [acceptRequest] = useAcceptFriendRequestMutation();
+
+  const friendRequestHandler = async ({ _id, accept }) => {
+    dispatch(setIsNotification(false));
+    try {
+      const res = await acceptRequest({ requestId: _id, accept });
+
+      if (res.data?.success) {
+        console.log("Use socket");
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data?.error || "Something went wrong");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+      console.log(error);
+    }
   };
 
   const closeHandler = () => dispatch(setIsNotification(false));
