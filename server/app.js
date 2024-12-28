@@ -22,6 +22,7 @@ import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.js";
 import { corsOptions } from "./constants/config.js";
+import { socketAuthenticator } from "./middlewares/auth.js";
 
 dotenv.config({
   path: "./.env",
@@ -63,7 +64,13 @@ app.get("/", (req, res) => {
   res.send("Hello home");
 });
 
-io.use((socket, next) => {});
+io.use((socket, next) => {
+  cookieParser()(
+    socket.request,
+    socket.request.res,
+    async (err) => await socketAuthenticator(err, socket, next)
+  );
+});
 
 io.on("connection", (socket) => {
   console.log("user connected", socket.id);

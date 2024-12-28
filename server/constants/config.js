@@ -7,4 +7,6 @@ const corsOptions = {
   credentials: true,
 };
 
-export { corsOptions };
+const APP_TOKEN = "app-token";
+
+export { corsOptions, APP_TOKEN };

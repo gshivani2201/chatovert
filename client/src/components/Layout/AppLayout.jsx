@@ -16,6 +16,7 @@ import Header from "./Header";
 import Title from "../shared/Title";
 import ChatList from "../specific/ChatList";
 import Profile from "../specific/Profile";
+import { getSocket } from "../../socket";
 
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
@@ -24,6 +25,10 @@ const AppLayout = () => (WrappedComponent) => {
     const { isMobileMenu } = useSelector((state) => state.misc);
     const { user } = useSelector((state) => state.auth);
     const chatId = params.chatId;
+
+    const socket = getSocket()
+
+    console.log(socket.id)
 
     const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
 
