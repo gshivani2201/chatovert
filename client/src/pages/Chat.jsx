@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 // third party packages
 import { IconButton, Stack } from "@mui/material";
@@ -16,14 +16,30 @@ import AppLayout from "../components/Layout/AppLayout";
 import { InputBox } from "../components/styles/StyledComponents";
 import FileMenu from "../components/dialogs/FileMenu";
 import MessageComponent from "../components/shared/MessageComponent";
+import { getSocket } from "../socket";
+import { NEW_MESSAGE } from "../constants/events";
 
 const user = {
   _id: "qwerty",
   name: "Shivani Gupta",
 };
 
-const Chat = () => {
+const Chat = ({ chatId, members }) => {
+  const [message, setMessage] = useState("");
   const containerRef = useRef(null);
+
+  const socket = getSocket();
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+
+    if (!message.trim()) return;
+
+    // Emitting the message to the server
+    socket.emit(NEW_MESSAGE, { chatId, members, message });
+
+    setMessage("");
+  };
 
   return (
     <>
@@ -48,6 +64,7 @@ const Chat = () => {
         style={{
           height: "10%",
         }}
+        onSubmit={submitHandler}
       >
         <Stack
           direction={"row"}
@@ -66,7 +83,11 @@ const Chat = () => {
             <AttachFileIcon />
           </IconButton>
 
-          <InputBox placeholder="Type message here..." />
+          <InputBox
+            placeholder="Type message here..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
 
           <IconButton
             type="submit"

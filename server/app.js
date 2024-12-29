@@ -75,10 +75,7 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
   console.log("user connected", socket.id);
 
-  const user = {
-    _id: "abkjbc",
-    name: "nklnck",
-  };
+  const user = socket.user;
 
   userSocketIDs.set(user._id.toString(), socket.id);
 
