@@ -26,9 +26,7 @@ const AppLayout = () => (WrappedComponent) => {
     const { user } = useSelector((state) => state.auth);
     const chatId = params.chatId;
 
-    const socket = getSocket()
-
-    console.log(socket.id)
+    const socket = getSocket();
 
     const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
 
@@ -81,7 +79,7 @@ const AppLayout = () => (WrappedComponent) => {
             )}
           </Grid>
           <Grid item xs={12} sm={8} md={5} lg={6} height={"100%"}>
-            <WrappedComponent {...props} chatId={chatId} />
+            <WrappedComponent {...props} chatId={chatId} user={user} />
           </Grid>
           <Grid
             item

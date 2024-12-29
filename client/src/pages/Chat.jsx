@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // third party packages
 import { IconButton, Skeleton, Stack } from "@mui/material";
@@ -9,7 +9,6 @@ import {
 
 // assets
 import { gray, orange } from "../constants/color";
-import { sampleMessage } from "../constants/sampleData";
 
 // Child components
 import AppLayout from "../components/Layout/AppLayout";
@@ -19,20 +18,28 @@ import MessageComponent from "../components/shared/MessageComponent";
 import { getSocket } from "../socket";
 import { NEW_MESSAGE } from "../constants/events";
 import { useGetChatDetailsQuery } from "../redux/reducers/api";
+import { useErrors, useSocketEvents } from "../hooks/hook";
 
-const user = {
-  _id: "qwerty",
-  name: "Shivani Gupta",
-};
-
-const Chat = ({ chatId }) => {
+const Chat = ({ chatId, user }) => {
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
   const containerRef = useRef(null);
 
   const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
   const members = chatDetails?.data?.chat?.members;
+  const errors = [{ isError: chatDetails.isError, error: chatDetails.error }]
 
   const socket = getSocket();
+
+  const newMsgFunc = useCallback((data) => {
+    setMessages((prev) => [...prev, data.message]);
+  }, []);
+
+  const eventHandlers = { [NEW_MESSAGE]: newMsgFunc };
+
+  useSocketEvents(socket, eventHandlers);
+
+  useErrors(errors)
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -61,7 +68,7 @@ const Chat = ({ chatId }) => {
           overflowY: "auto",
         }}
       >
-        {sampleMessage.map((i) => (
+        {messages.map((i) => (
           <MessageComponent key={i._id} message={i} user={user} />
         ))}
       </Stack>
