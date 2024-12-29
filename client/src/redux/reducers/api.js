@@ -26,7 +26,7 @@ const api = createApi({
 
     sendFriendRequest: builder.mutation({
       query: (data) => ({
-        url: "/user/sendrequest",
+        url: "user/sendrequest",
         method: "PUT",
         credentials: "include",
         body: data,
@@ -36,7 +36,7 @@ const api = createApi({
 
     getNotifications: builder.query({
       query: () => ({
-        url: "/user/notifications",
+        url: "user/notifications",
         credentials: "include",
       }),
       keepUnusedDataFor: 0,
@@ -44,7 +44,7 @@ const api = createApi({
 
     acceptFriendRequest: builder.mutation({
       query: (data) => ({
-        url: "/user/accept-request",
+        url: "user/accept-request",
         method: "PUT",
         credentials: "include",
         body: data,
@@ -72,6 +72,15 @@ const api = createApi({
       }),
       providesTags: ["Message"],
     }),
+
+    sendAttachments: builder.mutation({
+      query: (data) => ({
+        url: "chat/message",
+        method: "POST",
+        credentials: "include",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -84,4 +93,5 @@ export const {
   useAcceptFriendRequestMutation,
   useGetChatDetailsQuery,
   useGetMessagesQuery,
+  useSendAttachmentsMutation,
 } = api;

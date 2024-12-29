@@ -7,7 +7,12 @@ export const fileFormat = (url = "") => {
 
   if (fileExt === "mp3" || fileExt === "wav") return "audio";
 
-  if (fileExt === "png" || fileExt === "jpeg" || fileExt === "gif")
+  if (
+    fileExt === "png" ||
+    fileExt === "jpeg" ||
+    fileExt === "gif" ||
+    fileExt === "jpg"
+  )
     return "image";
 
   return "file";
