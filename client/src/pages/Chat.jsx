@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 // third party packages
 import { IconButton, Skeleton, Stack } from "@mui/material";
@@ -6,6 +6,7 @@ import {
   AttachFile as AttachFileIcon,
   Send as SendIcon,
 } from "@mui/icons-material";
+import { useInfiniteScrollTop } from "6pp";
 
 // assets
 import { gray, orange } from "../constants/color";
@@ -17,17 +18,34 @@ import FileMenu from "../components/dialogs/FileMenu";
 import MessageComponent from "../components/shared/MessageComponent";
 import { getSocket } from "../socket";
 import { NEW_MESSAGE } from "../constants/events";
-import { useGetChatDetailsQuery } from "../redux/reducers/api";
+import {
+  useGetChatDetailsQuery,
+  useGetMessagesQuery,
+} from "../redux/reducers/api";
 import { useErrors, useSocketEvents } from "../hooks/hook";
 
 const Chat = ({ chatId, user }) => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [page, setPage] = useState(1);
+
   const containerRef = useRef(null);
 
   const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
+  const oldMessagesChunk = useGetMessagesQuery({ chatId, page });
   const members = chatDetails?.data?.chat?.members;
-  const errors = [{ isError: chatDetails.isError, error: chatDetails.error }]
+  const errors = [
+    { isError: chatDetails.isError, error: chatDetails.error },
+    { isError: oldMessagesChunk.isError, error: oldMessagesChunk.error },
+  ];
+
+  const { data: oldMessages, setData: setOldMessages } = useInfiniteScrollTop(
+    containerRef,
+    oldMessagesChunk.data?.totalPages,
+    page,
+    setPage,
+    oldMessagesChunk.data?.messages
+  );
 
   const socket = getSocket();
 
@@ -39,7 +57,9 @@ const Chat = ({ chatId, user }) => {
 
   useSocketEvents(socket, eventHandlers);
 
-  useErrors(errors)
+  useErrors(errors);
+
+  const allMessages = [...oldMessages, ...messages];
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -68,7 +88,7 @@ const Chat = ({ chatId, user }) => {
           overflowY: "auto",
         }}
       >
-        {messages.map((i) => (
+        {allMessages.map((i) => (
           <MessageComponent key={i._id} message={i} user={user} />
         ))}
       </Stack>
