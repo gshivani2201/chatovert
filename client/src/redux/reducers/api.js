@@ -43,8 +43,8 @@ const api = createApi({
     }),
 
     acceptFriendRequest: builder.mutation({
-      query: () => ({
-        url: "/user/acceptrequest",
+      query: (data) => ({
+        url: "/user/accept-request",
         method: "PUT",
         credentials: "include",
         body: data,
