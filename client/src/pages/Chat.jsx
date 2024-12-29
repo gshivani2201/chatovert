@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
 // third party packages
-import { IconButton, Stack } from "@mui/material";
+import { IconButton, Skeleton, Stack } from "@mui/material";
 import {
   AttachFile as AttachFileIcon,
   Send as SendIcon,
@@ -18,15 +18,19 @@ import FileMenu from "../components/dialogs/FileMenu";
 import MessageComponent from "../components/shared/MessageComponent";
 import { getSocket } from "../socket";
 import { NEW_MESSAGE } from "../constants/events";
+import { useGetChatDetailsQuery } from "../redux/reducers/api";
 
 const user = {
   _id: "qwerty",
   name: "Shivani Gupta",
 };
 
-const Chat = ({ chatId, members }) => {
+const Chat = ({ chatId }) => {
   const [message, setMessage] = useState("");
   const containerRef = useRef(null);
+
+  const chatDetails = useGetChatDetailsQuery({ chatId, skip: !chatId });
+  const members = chatDetails?.data?.chat?.members;
 
   const socket = getSocket();
 
@@ -41,7 +45,9 @@ const Chat = ({ chatId, members }) => {
     setMessage("");
   };
 
-  return (
+  return chatDetails.isLoading ? (
+    <Skeleton />
+  ) : (
     <>
       <Stack
         ref={containerRef}
