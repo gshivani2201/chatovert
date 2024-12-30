@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // third party packages
 import { IconButton, Skeleton, Stack } from "@mui/material";
@@ -54,9 +54,22 @@ const Chat = ({ chatId, user }) => {
 
   const socket = getSocket();
 
-  const newMsgFunc = useCallback((data) => {
-    setMessages((prev) => [...prev, data.message]);
-  }, []);
+  useEffect(() => {
+    return () => {
+      setMessage("");
+      setMessages([]);
+      setPage(1);
+      setOldMessages([]);
+    };
+  }, [chatId]);
+
+  const newMsgFunc = useCallback(
+    (data) => {
+      if (data.chatId !== chatId) return;
+      setMessages((prev) => [...prev, data.message]);
+    },
+    [chatId]
+  );
 
   const eventHandlers = { [NEW_MESSAGE]: newMsgFunc };
 
