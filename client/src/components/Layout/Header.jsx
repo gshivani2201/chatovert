@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   AppBar,
   Backdrop,
+  Badge,
   Box,
   IconButton,
   Toolbar,
@@ -32,6 +33,7 @@ import {
 // assets
 import { orange } from "../../constants/color";
 import { server } from "../../constants/config";
+import { resetNotificationCount } from "../../redux/reducers/chat";
 
 const SearchDialog = lazy(() => import("../specific/Search"));
 const NotificationsDialog = lazy(() => import("../specific/Notifications"));
@@ -44,6 +46,7 @@ const Header = () => {
   const dispatch = useDispatch();
 
   const { isSearch, isNotification } = useSelector((state) => state.misc);
+  const { notificationCount } = useSelector((state) => state.chat);
 
   const handleMobile = () => {
     console.log("handle mobile");
@@ -77,7 +80,10 @@ const Header = () => {
     }
   };
 
-  const openNotification = () => dispatch(setIsNotification(true));
+  const openNotification = () => {
+    dispatch(setIsNotification(true));
+    dispatch(resetNotificationCount());
+  };
 
   return (
     <>
@@ -125,6 +131,7 @@ const Header = () => {
               title={"Notifications"}
               icon={<NotificationsIcon />}
               clickHandler={openNotification}
+              value={notificationCount}
             />
 
             {/* Logout */}
@@ -158,11 +165,17 @@ const Header = () => {
   );
 };
 
-const IconBtn = ({ title, icon, clickHandler }) => {
+const IconBtn = ({ title, icon, clickHandler, value }) => {
   return (
     <Tooltip title={title}>
       <IconButton color="inherit" size="large" onClick={clickHandler}>
-        {icon}
+        {value ? (
+          <Badge badgeContent={value} color="error">
+            {icon}
+          </Badge>
+        ) : (
+          icon
+        )}
       </IconButton>
     </Tooltip>
   );
