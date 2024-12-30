@@ -49,6 +49,8 @@ const io = new Server(server, {
   cors: corsOptions,
 });
 
+app.set("io", io)
+
 // Using middlewares
 
 app.use(express.json()); // access json data
