@@ -9,7 +9,7 @@ import { server } from "./constants/config";
 
 // child components
 import ProtectRoute from "./components/auth/ProtectRoute";
-import Loader from "./components/Layout/Loader";
+import { LayoutLoader } from "./components/Layout/Loader";
 import { SocketProvider } from "./socket";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -36,10 +36,10 @@ const App = () => {
   }, [dispatch]);
 
   return loader ? (
-    <Loader />
+    <LayoutLoader />
   ) : (
     <BrowserRouter>
-      <Suspense fallback={<Loader />}>
+      <Suspense fallback={<LayoutLoader />}>
         <Routes>
           <Route
             element={

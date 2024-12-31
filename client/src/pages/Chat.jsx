@@ -27,6 +27,7 @@ import MessageComponent from "../components/shared/MessageComponent";
 import { getSocket } from "../socket";
 import { NEW_MESSAGE, START_TYPING, STOP_TYPING } from "../constants/events";
 import { useErrors, useSocketEvents } from "../hooks/hook";
+import { TypingLoader } from "../components/Layout/Loader";
 
 const Chat = ({ chatId, user }) => {
   const [message, setMessage] = useState("");
@@ -38,6 +39,7 @@ const Chat = ({ chatId, user }) => {
 
   const containerRef = useRef(null);
   const typingTimeout = useRef(null);
+  const bottomRef = useRef(null);
 
   const dispatch = useDispatch();
 
@@ -82,8 +84,7 @@ const Chat = ({ chatId, user }) => {
   const startTypingListener = useCallback(
     (data) => {
       if (data.chatId !== chatId) return;
-
-      console.log("typing...");
+      setUserTyping(true);
     },
     [chatId]
   );
@@ -91,8 +92,7 @@ const Chat = ({ chatId, user }) => {
   const stopTypingListener = useCallback(
     (data) => {
       if (data.chatId !== chatId) return;
-
-      console.log("stop typing");
+      setUserTyping(false);
     },
     [chatId]
   );
@@ -117,10 +117,12 @@ const Chat = ({ chatId, user }) => {
       setIAmTyping(true);
     }
 
-    setTimeout(() => {
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+
+    typingTimeout.current = setTimeout(() => {
       socket.emit(STOP_TYPING, { members, chatId });
       setIAmTyping(false);
-    }, 2000);
+    }, [2000]);
   };
 
   const handleFileOpen = (e) => {
@@ -158,6 +160,10 @@ const Chat = ({ chatId, user }) => {
         {allMessages.map((i) => (
           <MessageComponent key={i._id} message={i} user={user} />
         ))}
+
+        {userTyping && <TypingLoader />}
+
+        <div ref={bottomRef} />
       </Stack>
 
       <form
