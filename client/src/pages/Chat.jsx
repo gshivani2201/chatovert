@@ -83,7 +83,16 @@ const Chat = ({ chatId, user }) => {
     (data) => {
       if (data.chatId !== chatId) return;
 
-      console.log("typing");
+      console.log("typing...");
+    },
+    [chatId]
+  );
+
+  const stopTypingListener = useCallback(
+    (data) => {
+      if (data.chatId !== chatId) return;
+
+      console.log("stop typing");
     },
     [chatId]
   );
@@ -91,6 +100,7 @@ const Chat = ({ chatId, user }) => {
   const eventHandlers = {
     [NEW_MESSAGE]: newMsgListener,
     [START_TYPING]: startTypingListener,
+    [STOP_TYPING]: stopTypingListener,
   };
 
   useSocketEvents(socket, eventHandlers);
