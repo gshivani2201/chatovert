@@ -72,6 +72,11 @@ const Chat = ({ chatId, user }) => {
     };
   }, [chatId]);
 
+  useEffect(() => {
+    if (bottomRef.current)
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   // socket events listeners
   const newMsgListener = useCallback(
     (data) => {
