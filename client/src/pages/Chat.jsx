@@ -25,7 +25,12 @@ import { InputBox } from "../components/styles/StyledComponents";
 import FileMenu from "../components/dialogs/FileMenu";
 import MessageComponent from "../components/shared/MessageComponent";
 import { getSocket } from "../socket";
-import { NEW_MESSAGE, START_TYPING, STOP_TYPING } from "../constants/events";
+import {
+  ALERT,
+  NEW_MESSAGE,
+  START_TYPING,
+  STOP_TYPING,
+} from "../constants/events";
 import { useErrors, useSocketEvents } from "../hooks/hook";
 import { TypingLoader } from "../components/Layout/Loader";
 
@@ -78,6 +83,20 @@ const Chat = ({ chatId, user }) => {
   }, [messages]);
 
   // socket events listeners
+  const alertListener = useCallback((content) => {
+    const messageForAlert = {
+      content,
+      sender: {
+        _id: Math.floor(Math.random()).toFixed(9),
+        name: "Admin",
+      },
+      chat: chatId,
+      createdAt: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, messageForAlert]);
+  }, [chatId]);
+
   const newMsgListener = useCallback(
     (data) => {
       if (data.chatId !== chatId) return;
@@ -103,6 +122,7 @@ const Chat = ({ chatId, user }) => {
   );
 
   const eventHandlers = {
+    [ALERT]: alertListener,
     [NEW_MESSAGE]: newMsgListener,
     [START_TYPING]: startTypingListener,
     [STOP_TYPING]: stopTypingListener,
