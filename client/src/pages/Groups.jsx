@@ -24,9 +24,11 @@ import {
 
 // assets
 import { bgGradient, matteBlack } from "../constants/color";
-import { sampleUsers } from "../constants/sampleData";
 
-import { useMyGroupsQuery } from "../redux/reducers/api";
+import {
+  useGetChatDetailsQuery,
+  useMyGroupsQuery,
+} from "../redux/reducers/api";
 import { useErrors } from "../hooks/hook";
 
 // child components
@@ -49,16 +51,40 @@ const Groups = () => {
   const navigate = useNavigate();
 
   const myGroups = useMyGroupsQuery("");
+  const groupDetails = useGetChatDetailsQuery(
+    { chatId, populate: true },
+    { skip: !chatId }
+  );
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [newGroupName, setNewGroupName] = useState("");
   const [confirmDeleteDialog, setConfirmDeleteDialog] = useState(false);
+  const [members, setMembers] = useState([]);
 
-  const errors = [{ isError: myGroups.isError, error: myGroups.error }];
+  const errors = [
+    { isError: myGroups.isError, error: myGroups.error },
+    { isError: groupDetails.isError, error: groupDetails.error },
+  ];
 
   useErrors(errors);
+
+  useEffect(() => {
+    const groupChatData = groupDetails.data?.chat || [];
+    if (groupChatData) {
+      setGroupName(groupChatData.name);
+      setNewGroupName(groupChatData.name);
+      setMembers(groupChatData?.members || []);
+    }
+
+    return () => {
+      setGroupName("");
+      setNewGroupName("");
+      setMembers([]);
+      setIsEdit(false);
+    };
+  }, [groupDetails.data]);
 
   useEffect(() => {
     if (chatId) {
@@ -261,7 +287,7 @@ const Groups = () => {
               height={"50vh"}
               overflow={"auto"}
             >
-              {sampleUsers.map((i) => (
+              {members.map((i) => (
                 <UserItem
                   key={i._id}
                   user={i}
