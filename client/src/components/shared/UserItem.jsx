@@ -24,7 +24,7 @@ const UserItem = ({
         width={"100%"}
         {...styling}
       >
-        <Avatar src={transformImage(avatar)} />
+        {avatar && avatar[0] && <Avatar src={transformImage(avatar[0])} />}
         <Typography
           variant="body1"
           sx={{

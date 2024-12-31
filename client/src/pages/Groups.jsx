@@ -26,10 +26,14 @@ import {
 import { bgGradient, matteBlack } from "../constants/color";
 import { sampleChats, sampleUsers } from "../constants/sampleData";
 
+import { useMyGroupsQuery } from "../redux/reducers/api";
+import { useErrors } from "../hooks/hook";
+
 // child components
 import { LinkCompStyled } from "../components/styles/StyledComponents";
 import AvatarCard from "../components/shared/AvatarCard";
 import UserItem from "../components/shared/UserItem";
+import { LayoutLoader } from "../components/Layout/Loader";
 
 const ConfirmDeleteDialog = lazy(() =>
   import("../components/dialogs/ConfirmDeleteDialog")
@@ -44,11 +48,17 @@ const Groups = () => {
   const chatId = useSearchParams()[0].get("group");
   const navigate = useNavigate();
 
+  const myGroups = useMyGroupsQuery("");
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [newGroupName, setNewGroupName] = useState("");
   const [confirmDeleteDialog, setConfirmDeleteDialog] = useState(false);
+
+  const errors = [{ isError: myGroups.isError, error: myGroups.error }];
+
+  useErrors(errors);
 
   useEffect(() => {
     if (chatId) {
@@ -196,7 +206,9 @@ const Groups = () => {
     </Stack>
   );
 
-  return (
+  return myGroups.isLoading ? (
+    <LayoutLoader />
+  ) : (
     <Grid container height={"100vh"}>
       <Grid
         item
