@@ -25,7 +25,7 @@ import { InputBox } from "../components/styles/StyledComponents";
 import FileMenu from "../components/dialogs/FileMenu";
 import MessageComponent from "../components/shared/MessageComponent";
 import { getSocket } from "../socket";
-import { NEW_MESSAGE } from "../constants/events";
+import { NEW_MESSAGE, START_TYPING } from "../constants/events";
 import { useErrors, useSocketEvents } from "../hooks/hook";
 
 const Chat = ({ chatId, user }) => {
@@ -82,6 +82,12 @@ const Chat = ({ chatId, user }) => {
   useErrors(errors);
 
   const allMessages = [...oldMessages, ...messages];
+
+  const messageChangeHandler = (e) => {
+    setMessage(e.target.value);
+
+    socket.emit(START_TYPING, { members, chatId });
+  };
 
   const handleFileOpen = (e) => {
     dispatch(setIsFileMenu(true));
@@ -147,7 +153,7 @@ const Chat = ({ chatId, user }) => {
           <InputBox
             placeholder="Type message here..."
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={messageChangeHandler}
           />
 
           <IconButton
