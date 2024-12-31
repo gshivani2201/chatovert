@@ -21,7 +21,11 @@ import Title from "../shared/Title";
 import ChatList from "../specific/ChatList";
 import Profile from "../specific/Profile";
 import { getSocket } from "../../socket";
-import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/events";
+import {
+  NEW_MESSAGE_ALERT,
+  NEW_REQUEST,
+  REFETCH_CHATS,
+} from "../../constants/events";
 import { getOrSaveFromLocalStorage } from "../lib/features";
 
 const AppLayout = () => (WrappedComponent) => {
@@ -35,7 +39,7 @@ const AppLayout = () => (WrappedComponent) => {
 
     const socket = getSocket();
 
-    const { isLoading, data, isError, error } = useMyChatsQuery("");
+    const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
 
     useErrors([{ isError, error }]);
 
@@ -46,7 +50,8 @@ const AppLayout = () => (WrappedComponent) => {
       });
     }, [newMessagesAlert]);
 
-    const newMsgAlertFunc = useCallback(
+    // listen to socket events
+    const newMsgAlertListener = useCallback(
       (data) => {
         if (data.chat === chatId) return;
 
@@ -55,13 +60,18 @@ const AppLayout = () => (WrappedComponent) => {
       [chatId]
     );
 
-    const newRequestFunc = useCallback(() => {
+    const newRequestListener = useCallback(() => {
       dispatch(incrementNotificationCount());
     }, [dispatch]);
 
+    const refetchChatsListener = useCallback(() => {
+      refetch();
+    }, [refetch]);
+
     const eventHandlers = {
-      [NEW_MESSAGE_ALERT]: newMsgAlertFunc,
-      [NEW_REQUEST]: newRequestFunc,
+      [NEW_MESSAGE_ALERT]: newMsgAlertListener,
+      [NEW_REQUEST]: newRequestListener,
+      [REFETCH_CHATS]: refetchChatsListener,
     };
 
     useSocketEvents(socket, eventHandlers);

@@ -28,8 +28,9 @@ import { bgGradient, matteBlack } from "../constants/color";
 import {
   useGetChatDetailsQuery,
   useMyGroupsQuery,
+  useRenameGroupMutation,
 } from "../redux/reducers/api";
-import { useErrors } from "../hooks/hook";
+import { useAsyncMutation, useErrors } from "../hooks/hook";
 
 // child components
 import { LinkCompStyled } from "../components/styles/StyledComponents";
@@ -54,6 +55,9 @@ const Groups = () => {
   const groupDetails = useGetChatDetailsQuery(
     { chatId, populate: true },
     { skip: !chatId }
+  );
+  const [renameGroup, isLoadingRenameGroup] = useAsyncMutation(
+    useRenameGroupMutation
   );
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -113,6 +117,7 @@ const Groups = () => {
 
   const updateGroupName = () => {
     setIsEdit(false);
+    renameGroup("Updating group name...", { chatId, name: newGroupName });
   };
 
   const openConfirmDeleteHandler = () => {
@@ -184,14 +189,17 @@ const Groups = () => {
             value={newGroupName}
             onChange={(e) => setNewGroupName(e.target.value)}
           />
-          <IconButton onClick={updateGroupName}>
+          <IconButton onClick={updateGroupName} disabled={isLoadingRenameGroup}>
             <DoneIcon />
           </IconButton>
         </>
       ) : (
         <>
           <Typography variant="h4">{groupName}</Typography>
-          <IconButton onClick={() => setIsEdit(true)}>
+          <IconButton
+            onClick={() => setIsEdit(true)}
+            disabled={isLoadingRenameGroup}
+          >
             <EditIcon />
           </IconButton>
         </>
