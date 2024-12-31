@@ -24,7 +24,7 @@ const Profile = ({ user }) => {
           marginBottom: "1rem",
           border: "5px solid white ",
         }}
-        src={transformImage(avatar.url)}
+        src={transformImage(avatar?.url)}
       />
       <ProfileCard heading={"Bio"} text={bio} Icon={<FaceIcon />} />
       <ProfileCard

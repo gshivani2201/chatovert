@@ -1,4 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+
+import {
+  useGetChatDetailsQuery,
+  useGetMessagesQuery,
+} from "../redux/reducers/api";
+import { setIsFileMenu } from "../redux/reducers/misc";
+import { removeNewMessagesAlert } from "../redux/reducers/chat";
 
 // third party packages
 import { IconButton, Skeleton, Stack } from "@mui/material";
@@ -18,13 +26,7 @@ import FileMenu from "../components/dialogs/FileMenu";
 import MessageComponent from "../components/shared/MessageComponent";
 import { getSocket } from "../socket";
 import { NEW_MESSAGE } from "../constants/events";
-import {
-  useGetChatDetailsQuery,
-  useGetMessagesQuery,
-} from "../redux/reducers/api";
 import { useErrors, useSocketEvents } from "../hooks/hook";
-import { useDispatch } from "react-redux";
-import { setIsFileMenu } from "../redux/reducers/misc";
 
 const Chat = ({ chatId, user }) => {
   const [message, setMessage] = useState("");
@@ -55,6 +57,8 @@ const Chat = ({ chatId, user }) => {
   const socket = getSocket();
 
   useEffect(() => {
+    dispatch(removeNewMessagesAlert(chatId));
+
     return () => {
       setMessage("");
       setMessages([]);

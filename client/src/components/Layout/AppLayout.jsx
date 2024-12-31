@@ -7,7 +7,10 @@ import { Drawer, Grid, Skeleton } from "@mui/material";
 // actions
 import { useMyChatsQuery } from "../../redux/reducers/api";
 import { setIsMobileMenu } from "../../redux/reducers/misc";
-import { incrementNotificationCount } from "../../redux/reducers/chat";
+import {
+  incrementNotificationCount,
+  setNewMessagesAlert,
+} from "../../redux/reducers/chat";
 
 // hooks
 import { useErrors, useSocketEvents } from "../../hooks/hook";
@@ -19,22 +22,38 @@ import ChatList from "../specific/ChatList";
 import Profile from "../specific/Profile";
 import { getSocket } from "../../socket";
 import { NEW_MESSAGE_ALERT, NEW_REQUEST } from "../../constants/events";
+import { getOrSaveFromLocalStorage } from "../lib/features";
 
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     const params = useParams();
     const dispatch = useDispatch();
     const { isMobileMenu } = useSelector((state) => state.misc);
+    const { newMessagesAlert } = useSelector((state) => state.chat);
     const { user } = useSelector((state) => state.auth);
     const chatId = params.chatId;
 
     const socket = getSocket();
 
-    const { isLoading, data, isError, error, refetch } = useMyChatsQuery("");
+    const { isLoading, data, isError, error } = useMyChatsQuery("");
 
     useErrors([{ isError, error }]);
 
-    const newMsgAlertFunc = useCallback(() => {}, []);
+    useEffect(() => {
+      getOrSaveFromLocalStorage({
+        key: NEW_MESSAGE_ALERT,
+        value: newMessagesAlert,
+      });
+    }, [newMessagesAlert]);
+
+    const newMsgAlertFunc = useCallback(
+      (data) => {
+        if (data.chat === chatId) return;
+
+        dispatch(setNewMessagesAlert(data));
+      },
+      [chatId]
+    );
 
     const newRequestFunc = useCallback(() => {
       dispatch(incrementNotificationCount());
@@ -69,6 +88,7 @@ const AppLayout = () => (WrappedComponent) => {
               chats={data?.chats}
               chatId={chatId}
               handleDeleteChat={handleDeleteChat}
+              newMessagesAlert={newMessagesAlert}
             />
           </Drawer>
         )}
