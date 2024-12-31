@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { Drawer, Grid, Skeleton } from "@mui/material";
 
@@ -31,6 +31,7 @@ import { getOrSaveFromLocalStorage } from "../lib/features";
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
     const params = useParams();
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const { isMobileMenu } = useSelector((state) => state.misc);
     const { newMessagesAlert } = useSelector((state) => state.chat);
@@ -66,7 +67,8 @@ const AppLayout = () => (WrappedComponent) => {
 
     const refetchChatsListener = useCallback(() => {
       refetch();
-    }, [refetch]);
+      navigate("/");
+    }, [refetch, navigate]);
 
     const eventHandlers = {
       [NEW_MESSAGE_ALERT]: newMsgAlertListener,

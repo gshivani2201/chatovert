@@ -1,5 +1,6 @@
 import { useState, memo, useEffect, lazy, Suspense } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   Backdrop,
@@ -26,10 +27,13 @@ import {
 import { bgGradient, matteBlack } from "../constants/color";
 
 import {
+  useAddGroupMembersMutation,
   useGetChatDetailsQuery,
   useMyGroupsQuery,
+  useRemoveGroupMemberMutation,
   useRenameGroupMutation,
 } from "../redux/reducers/api";
+import { setIsAddMember } from "../redux/reducers/misc";
 import { useAsyncMutation, useErrors } from "../hooks/hook";
 
 // child components
@@ -45,11 +49,12 @@ const AddMemberDialog = lazy(() =>
   import("../components/dialogs/AddMemberDialog")
 );
 
-const isAddMember = false;
-
 const Groups = () => {
   const chatId = useSearchParams()[0].get("group");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { isAddMember } = useSelector((state) => state.misc);
 
   const myGroups = useMyGroupsQuery("");
   const groupDetails = useGetChatDetailsQuery(
@@ -58,6 +63,12 @@ const Groups = () => {
   );
   const [renameGroup, isLoadingRenameGroup] = useAsyncMutation(
     useRenameGroupMutation
+  );
+  const [removeMember, isLoadingRemoveMember] = useAsyncMutation(
+    useRemoveGroupMemberMutation
+  );
+  const [addMembers, isLoadingAddMembers] = useAsyncMutation(
+    useAddGroupMembersMutation
   );
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -128,13 +139,17 @@ const Groups = () => {
     setConfirmDeleteDialog(false);
   };
 
-  const openAddMemberHandler = () => {};
+  const openAddMemberHandler = () => {
+    dispatch(setIsAddMember(true));
+  };
 
   const deleteHandler = () => {
     closeConfirmDeleteHandler();
   };
 
-  const removeMemberHandler = (id) => {};
+  const removeMemberHandler = (userId) => {
+    removeMember("Removing member...", { chatId, userId });
+  };
 
   const IconBtns = (
     <>
@@ -317,7 +332,7 @@ const Groups = () => {
 
       {isAddMember && (
         <Suspense fallback={<Backdrop open />}>
-          <AddMemberDialog />
+          <AddMemberDialog chatId={chatId} />
         </Suspense>
       )}
 

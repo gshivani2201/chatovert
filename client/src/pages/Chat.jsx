@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import {
@@ -35,6 +36,8 @@ import { useErrors, useSocketEvents } from "../hooks/hook";
 import { TypingLoader } from "../components/Layout/Loader";
 
 const Chat = ({ chatId, user }) => {
+  const navigate = useNavigate();
+
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [page, setPage] = useState(1);
@@ -78,24 +81,31 @@ const Chat = ({ chatId, user }) => {
   }, [chatId]);
 
   useEffect(() => {
+    if (!chatDetails.data?.chat) return navigate("/");
+  }, [chatDetails.data]);
+
+  useEffect(() => {
     if (bottomRef.current)
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // socket events listeners
-  const alertListener = useCallback((content) => {
-    const messageForAlert = {
-      content,
-      sender: {
-        _id: Math.floor(Math.random()).toFixed(9),
-        name: "Admin",
-      },
-      chat: chatId,
-      createdAt: new Date().toISOString(),
-    };
+  const alertListener = useCallback(
+    (content) => {
+      const messageForAlert = {
+        content,
+        sender: {
+          _id: Math.floor(Math.random()).toFixed(9),
+          name: "Admin",
+        },
+        chat: chatId,
+        createdAt: new Date().toISOString(),
+      };
 
-    setMessages((prev) => [...prev, messageForAlert]);
-  }, [chatId]);
+      setMessages((prev) => [...prev, messageForAlert]);
+    },
+    [chatId]
+  );
 
   const newMsgListener = useCallback(
     (data) => {
