@@ -24,7 +24,7 @@ import {
 
 // assets
 import { bgGradient, matteBlack } from "../constants/color";
-import { sampleChats, sampleUsers } from "../constants/sampleData";
+import { sampleUsers } from "../constants/sampleData";
 
 import { useMyGroupsQuery } from "../redux/reducers/api";
 import { useErrors } from "../hooks/hook";
@@ -220,7 +220,7 @@ const Groups = () => {
         }}
         sm={4}
       >
-        <GroupsList myGroups={sampleChats} chatId={chatId} />
+        <GroupsList myGroups={myGroups?.data?.groups} chatId={chatId} />
       </Grid>
 
       <Grid
@@ -307,7 +307,11 @@ const Groups = () => {
         open={isMobileMenuOpen}
         onClose={handleMobileClose}
       >
-        <GroupsList w={"50vw"} myGroups={sampleChats} chatId={chatId} />
+        <GroupsList
+          w={"50vw"}
+          myGroups={myGroups?.data?.groups}
+          chatId={chatId}
+        />
       </Drawer>
     </Grid>
   );
