@@ -18,7 +18,11 @@ import { connectDB } from "./utils/features.js";
 import userRoutes from "./routes/user.js";
 import chatRoutes from "./routes/chat.js";
 import adminRoutes from "./routes/admin.js";
-import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
+import {
+  NEW_MESSAGE,
+  NEW_MESSAGE_ALERT,
+  START_TYPING,
+} from "./constants/events.js";
 import { getSockets } from "./lib/helper.js";
 import { Message } from "./models/message.js";
 import { corsOptions } from "./constants/config.js";
@@ -49,7 +53,7 @@ const io = new Server(server, {
   cors: corsOptions,
 });
 
-app.set("io", io)
+app.set("io", io);
 
 // Using middlewares
 
@@ -113,6 +117,11 @@ io.on("connection", (socket) => {
     } catch (error) {
       console.log(error);
     }
+  });
+
+  socket.on(START_TYPING, ({ members, chatId }) => {
+    const membersSocket = getSockets(members);
+    socket.to(membersSocket).emit(START_TYPING, { chatId });
   });
 
   socket.on("disconnect", () => {
