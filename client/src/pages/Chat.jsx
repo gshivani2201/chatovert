@@ -25,7 +25,7 @@ import { InputBox } from "../components/styles/StyledComponents";
 import FileMenu from "../components/dialogs/FileMenu";
 import MessageComponent from "../components/shared/MessageComponent";
 import { getSocket } from "../socket";
-import { NEW_MESSAGE, START_TYPING } from "../constants/events";
+import { NEW_MESSAGE, START_TYPING, STOP_TYPING } from "../constants/events";
 import { useErrors, useSocketEvents } from "../hooks/hook";
 
 const Chat = ({ chatId, user }) => {
@@ -33,8 +33,11 @@ const Chat = ({ chatId, user }) => {
   const [messages, setMessages] = useState([]);
   const [page, setPage] = useState(1);
   const [fileMenuAnchor, setFileMenuAnchor] = useState(null);
+  const [iAmTyping, setIAmTyping] = useState(false);
+  const [userTyping, setUserTyping] = useState(false);
 
   const containerRef = useRef(null);
+  const typingTimeout = useRef(null);
 
   const dispatch = useDispatch();
 
@@ -67,7 +70,8 @@ const Chat = ({ chatId, user }) => {
     };
   }, [chatId]);
 
-  const newMsgFunc = useCallback(
+  // socket events listeners
+  const newMsgListener = useCallback(
     (data) => {
       if (data.chatId !== chatId) return;
       setMessages((prev) => [...prev, data.message]);
@@ -75,7 +79,19 @@ const Chat = ({ chatId, user }) => {
     [chatId]
   );
 
-  const eventHandlers = { [NEW_MESSAGE]: newMsgFunc };
+  const startTypingListener = useCallback(
+    (data) => {
+      if (data.chatId !== chatId) return;
+
+      console.log("typing");
+    },
+    [chatId]
+  );
+
+  const eventHandlers = {
+    [NEW_MESSAGE]: newMsgListener,
+    [START_TYPING]: startTypingListener,
+  };
 
   useSocketEvents(socket, eventHandlers);
 
@@ -86,7 +102,15 @@ const Chat = ({ chatId, user }) => {
   const messageChangeHandler = (e) => {
     setMessage(e.target.value);
 
-    socket.emit(START_TYPING, { members, chatId });
+    if (!iAmTyping) {
+      socket.emit(START_TYPING, { members, chatId });
+      setIAmTyping(true);
+    }
+
+    setTimeout(() => {
+      socket.emit(STOP_TYPING, { members, chatId });
+      setIAmTyping(false);
+    }, 2000);
   };
 
   const handleFileOpen = (e) => {
