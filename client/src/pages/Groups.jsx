@@ -6,6 +6,7 @@ import {
   Backdrop,
   Box,
   Button,
+  CircularProgress,
   Drawer,
   Grid,
   IconButton,
@@ -27,7 +28,7 @@ import {
 import { bgGradient, matteBlack } from "../constants/color";
 
 import {
-  useAddGroupMembersMutation,
+  useDeleteChatMutation,
   useGetChatDetailsQuery,
   useMyGroupsQuery,
   useRemoveGroupMemberMutation,
@@ -67,8 +68,8 @@ const Groups = () => {
   const [removeMember, isLoadingRemoveMember] = useAsyncMutation(
     useRemoveGroupMemberMutation
   );
-  const [addMembers, isLoadingAddMembers] = useAsyncMutation(
-    useAddGroupMembersMutation
+  const [deleteGroup, isLoadingDeleteGroup] = useAsyncMutation(
+    useDeleteChatMutation
   );
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -144,10 +145,15 @@ const Groups = () => {
   };
 
   const deleteHandler = () => {
+    deleteGroup("Deleting Group...", chatId);
     closeConfirmDeleteHandler();
+    navigate("/groups");
   };
 
   const removeMemberHandler = (userId) => {
+    if (isLoadingDeleteGroup) {
+      return;
+    }
     removeMember("Removing member...", { chatId, userId });
   };
 
@@ -204,7 +210,10 @@ const Groups = () => {
             value={newGroupName}
             onChange={(e) => setNewGroupName(e.target.value)}
           />
-          <IconButton onClick={updateGroupName} disabled={isLoadingRenameGroup}>
+          <IconButton
+            onClick={updateGroupName}
+            disabled={isLoadingRenameGroup || isLoadingDeleteGroup}
+          >
             <DoneIcon />
           </IconButton>
         </>
@@ -213,7 +222,7 @@ const Groups = () => {
           <Typography variant="h4">{groupName}</Typography>
           <IconButton
             onClick={() => setIsEdit(true)}
-            disabled={isLoadingRenameGroup}
+            disabled={isLoadingRenameGroup || isLoadingDeleteGroup}
           >
             <EditIcon />
           </IconButton>
@@ -241,6 +250,7 @@ const Groups = () => {
         variant="outlined"
         startIcon={<DeleteIcon />}
         onClick={openConfirmDeleteHandler}
+        disabled={isLoadingDeleteGroup}
       >
         Delete Group
       </Button>
@@ -249,6 +259,7 @@ const Groups = () => {
         variant="contained"
         startIcon={<AddIcon />}
         onClick={openAddMemberHandler}
+        disabled={isLoadingDeleteGroup}
       >
         Add member
       </Button>
@@ -310,19 +321,23 @@ const Groups = () => {
               height={"50vh"}
               overflow={"auto"}
             >
-              {members.map((i) => (
-                <UserItem
-                  key={i._id}
-                  user={i}
-                  isAdded
-                  styling={{
-                    boxShadow: "0 0 0.5rem rgba(0, 0, 0, 0.2)",
-                    padding: "1rem 2rem",
-                    borderRadius: "1rem",
-                  }}
-                  handler={removeMemberHandler}
-                />
-              ))}
+              {isLoadingRemoveMember ? (
+                <CircularProgress />
+              ) : (
+                members.map((i) => (
+                  <UserItem
+                    key={i._id}
+                    user={i}
+                    isAdded
+                    styling={{
+                      boxShadow: "0 0 0.5rem rgba(0, 0, 0, 0.2)",
+                      padding: "1rem 2rem",
+                      borderRadius: "1rem",
+                    }}
+                    handler={removeMemberHandler}
+                  />
+                ))
+              )}
             </Stack>
 
             {ButtonGroup}
