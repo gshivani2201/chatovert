@@ -1,4 +1,11 @@
-import { Box, Container, Paper, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Container,
+  Paper,
+  Skeleton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import {
   AdminPanelSettings as AdminPanelSettingsIcon,
   Group as GroupIcon,
@@ -22,7 +29,6 @@ import {
   SearchField,
 } from "../../components/styles/StyledComponents";
 import { DoughnutChart, LineChart } from "../../components/specific/Charts";
-import { LayoutLoader } from "../../components/Layout/Loader";
 
 const Dashboard = () => {
   const { loading, data, error } = useFetchData(
@@ -94,7 +100,7 @@ const Dashboard = () => {
   );
 
   return loading ? (
-    <LayoutLoader />
+    <Skeleton height={"100vh"} />
   ) : (
     <AdminLayout>
       <Container component={"main"}>

@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 
-import { Avatar, Stack } from "@mui/material";
+import { Avatar, Skeleton, Stack } from "@mui/material";
+import { useFetchData } from "6pp";
 
 // assets
-import { dashboardData } from "../../constants/sampleData";
 import { transformImage } from "../../components/lib/features";
+
+import { useErrors } from "../../hooks/hook";
+import { server } from "../../constants/config";
 
 // child components
 import AdminLayout from "../../components/Layout/AdminLayout";
@@ -30,6 +33,12 @@ const columns = [
     headerName: "Name",
     headerClassName: "table-header",
     width: 300,
+  },
+  {
+    field: "groupChat",
+    headerName: "Group",
+    headerClassName: "table-header",
+    width: 100,
   },
   {
     field: "totalMembers",
@@ -69,22 +78,33 @@ const columns = [
 const ChatManagement = () => {
   const [rows, setRows] = useState([]);
 
-  useEffect(() => {
-    setRows(
-      dashboardData.chats.map((i) => ({
-        ...i,
-        id: i._id,
-        avatar: i.avatar.map((el) => transformImage(el, 50)),
-        members: i.members.map((el) => transformImage(el.avatar, 50)),
-        creator: {
-          ...i.creator,
-          avatar: transformImage(i.creator.avatar, 50),
-        },
-      }))
-    );
-  }, []);
+  const { loading, data, error } = useFetchData(
+    `${server}/api/v1/admin/chats`,
+    "dashboard-chats"
+  );
 
-  return (
+  useErrors([{ isError: error, error }]);
+
+  useEffect(() => {
+    if (data && data.chats.length) {
+      setRows(
+        data.chats.map((i) => ({
+          ...i,
+          id: i._id,
+          avatar: i.avatar.map((el) => transformImage(el, 50)),
+          members: i.members.map((el) => transformImage(el.avatar, 50)),
+          creator: {
+            ...i.creator,
+            avatar: transformImage(i.creator.avatar, 50),
+          },
+        }))
+      );
+    }
+  }, [data]);
+
+  return loading ? (
+    <Skeleton height={"100vh"} />
+  ) : (
     <AdminLayout>
       <Table rows={rows} columns={columns} heading={"All Chats"} />
     </AdminLayout>
