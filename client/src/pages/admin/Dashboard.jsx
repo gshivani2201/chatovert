@@ -7,9 +7,13 @@ import {
   Message as MessageIcon,
 } from "@mui/icons-material";
 import moment from "moment";
+import { useFetchData } from "6pp";
 
 // assets
 import { matteBlack } from "../../constants/color";
+
+import { server } from "../../constants/config";
+import { useErrors } from "../../hooks/hook";
 
 // child components
 import AdminLayout from "../../components/Layout/AdminLayout";
@@ -18,8 +22,18 @@ import {
   SearchField,
 } from "../../components/styles/StyledComponents";
 import { DoughnutChart, LineChart } from "../../components/specific/Charts";
+import { LayoutLoader } from "../../components/Layout/Loader";
 
 const Dashboard = () => {
+  const { loading, data, error } = useFetchData(
+    `${server}/api/v1/admin/stats`,
+    "dashboard-stats"
+  );
+
+  const { stats } = data || {};
+
+  useErrors([{ isError: error, error }]);
+
   const Appbar = (
     <>
       <Paper
@@ -61,13 +75,27 @@ const Dashboard = () => {
       alignItems={"center"}
       margin={"2rem 0"}
     >
-      <Widget title={"Users"} value={34} Icon={<PersonIcon />} />
-      <Widget title={"Chats"} value={3} Icon={<GroupIcon />} />
-      <Widget title={"Messages"} value={45} Icon={<MessageIcon />} />
+      <Widget
+        title={"Users"}
+        value={stats?.usersCount || 0}
+        Icon={<PersonIcon />}
+      />
+      <Widget
+        title={"Chats"}
+        value={stats?.totalChatsCount || 0}
+        Icon={<GroupIcon />}
+      />
+      <Widget
+        title={"Messages"}
+        value={stats?.messagesCount || 0}
+        Icon={<MessageIcon />}
+      />
     </Stack>
   );
 
-  return (
+  return loading ? (
+    <LayoutLoader />
+  ) : (
     <AdminLayout>
       <Container component={"main"}>
         {Appbar}
@@ -78,7 +106,7 @@ const Dashboard = () => {
             lg: "row",
           }}
           spacing={"2rem"}
-          flexWrap={"wrap"}
+          // flexWrap={"wrap"}
           justifyContent={"center"}
           alignItems={{
             xs: "center",
@@ -99,7 +127,7 @@ const Dashboard = () => {
               Last messages
             </Typography>
 
-            <LineChart value={[1, 6, 273, 45, 9]} />
+            <LineChart value={stats?.messagesChart || []} />
           </Paper>
 
           <Paper
@@ -117,7 +145,10 @@ const Dashboard = () => {
           >
             <DoughnutChart
               labels={["Single chats", "Group chats"]}
-              value={[23, 66]}
+              value={[
+                stats?.totalChatsCount - stats?.groupChat || 0,
+                stats?.groupChat || 0,
+              ]}
             />
             <Stack
               position={"absolute"}

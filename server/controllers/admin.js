@@ -142,7 +142,7 @@ const allMessages = TryCatch(async (req, res) => {
 });
 
 const getDashboardStats = TryCatch(async (req, res) => {
-  const [groupChat, usersCount, messagesCount, totalMessagesCount] =
+  const [groupChat, usersCount, messagesCount, totalChatsCount] =
     await Promise.all([
       Chat.countDocuments({ groupChat: true }),
       User.countDocuments(),
@@ -178,7 +178,7 @@ const getDashboardStats = TryCatch(async (req, res) => {
     groupChat,
     usersCount,
     messagesCount,
-    totalMessagesCount,
+    totalChatsCount,
     messagesChart: messages,
   };
 
