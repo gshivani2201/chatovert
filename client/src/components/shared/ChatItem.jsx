@@ -39,7 +39,6 @@ const ChatItem = ({
           padding: "1rem",
           backgroundColor: sameSender ? "black" : "unset",
           color: sameSender ? "white" : "unset",
-          justifyContent: "space-between",
           position: "relative",
         }}
       >
@@ -50,22 +49,22 @@ const ChatItem = ({
           {newMessageAlert && (
             <Typography>{newMessageAlert.count} New Message </Typography>
           )}
-
-          {isOnline && (
-            <Box
-              sx={{
-                width: "10px",
-                height: "10px",
-                borderRadius: "50%",
-                backgroundColor: "green",
-                position: "absolute",
-                top: "50%",
-                right: "1rem",
-                transform: "transform(-50%)",
-              }}
-            ></Box>
-          )}
         </Stack>
+
+        {isOnline && (
+          <Box
+            sx={{
+              width: "10px",
+              height: "10px",
+              borderRadius: "50%",
+              backgroundColor: "green",
+              position: "absolute",
+              top: "45%",
+              right: "1rem",
+              transform: "transform(-50%)",
+            }}
+          />
+        )}
       </motion.div>
     </LinkCompStyled>
   );
