@@ -9,7 +9,10 @@ import {
 } from "@mui/icons-material";
 
 import { setIsDeleteMenu } from "../../redux/reducers/misc";
-import { useDeleteChatMutation } from "../../redux/reducers/api";
+import {
+  useDeleteChatMutation,
+  useLeaveGroupMutation,
+} from "../../redux/reducers/api";
 
 import { useAsyncMutation } from "../../hooks/hook";
 
@@ -19,24 +22,31 @@ const DeleteChatMenu = ({ dispatch, deleteMenuAnchor }) => {
     (state) => state.misc
   );
 
-  const [deleteChat, _, deleteChatData] = useAsyncMutation(
+  const [deleteChat, isLoadingDeleteChat, deleteChatData] = useAsyncMutation(
     useDeleteChatMutation
+  );
+
+  const [leaveGroup, isLoadingLeaveGroup, leaveGroupData] = useAsyncMutation(
+    useLeaveGroupMutation
   );
 
   const isGroup = selectedDeleteChat.groupChat;
 
   useEffect(() => {
-    if (deleteChatData) {
+    if (deleteChatData || leaveGroupData) {
       navigate("/");
     }
-  }, [deleteChatData]);
+  }, [deleteChatData, leaveGroupData]);
 
   const closeHandler = () => {
     dispatch(setIsDeleteMenu(false));
     deleteMenuAnchor.current = null;
   };
 
-  const leaveGroupHandler = () => {};
+  const leaveGroupHandler = () => {
+    closeHandler();
+    leaveGroup("Leaving group...", selectedDeleteChat.chatId);
+  };
 
   const deleteChatHandler = () => {
     closeHandler();
