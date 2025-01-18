@@ -1,7 +1,8 @@
+import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { adminLogin } from "../../redux/thunks/admin";
+import { adminLogin, getAdmin } from "../../redux/thunks/admin";
 
 import { Container, Paper, TextField, Typography, Button } from "@mui/material";
 import { useInputValidation } from "6pp";
@@ -14,6 +15,10 @@ const AdminLogin = () => {
   const secretKey = useInputValidation("");
 
   const { isAdmin } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    dispatch(getAdmin());
+  }, [dispatch]);
 
   const submitHandler = (e) => {
     e.preventDefault();

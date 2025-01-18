@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation, Link as LinkComponent, Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   Box,
@@ -23,6 +23,7 @@ import {
 
 // assets
 import { gray, matteBlack } from "../../constants/color";
+import { adminLogout } from "../../redux/thunks/admin";
 
 const adminTabs = [
   {
@@ -103,9 +104,12 @@ const AdminLayout = ({ children }) => {
 export default AdminLayout;
 
 const SideBar = ({ w = "100%" }) => {
+  const dispatch = useDispatch();
   const location = useLocation();
 
-  const logoutHandler = () => {};
+  const logoutHandler = () => {
+    dispatch(adminLogout());
+  };
 
   return (
     <Stack width={w} direction={"column"} p={"3rem"} spacing={"3rem"}>
