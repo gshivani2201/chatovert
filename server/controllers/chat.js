@@ -161,12 +161,10 @@ const removeMember = TryCatch(async (req, res, next) => {
 
   await chat.save();
 
-  emitEvent(
-    req,
-    ALERT,
-    chat.members,
-    `${userThatWillBeRemoved} has been removed from the group`
-  );
+  emitEvent(req, ALERT, chat.members, {
+    message: `${userThatWillBeRemoved} has been removed from the group`,
+    chatId,
+  });
 
   emitEvent(req, REFETCH_CHATS, allChatMembers);
 
@@ -208,7 +206,10 @@ const leaveGroup = TryCatch(async (req, res, next) => {
     chat.save(),
   ]);
 
-  emitEvent(req, ALERT, chat.members, `${user.name} has left the group`);
+  emitEvent(req, ALERT, chat.members, {
+    message: `User ${user.name} has left the group`,
+    chatId,
+  });
 
   return res.status(200).json({
     success: true,

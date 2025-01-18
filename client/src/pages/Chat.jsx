@@ -81,8 +81,8 @@ const Chat = ({ chatId, user }) => {
   }, [chatId]);
 
   useEffect(() => {
-    if (!chatDetails.data?.chat) return navigate("/");
-  }, [chatDetails.data]);
+    if (chatDetails.isError) return navigate("/");
+  }, [chatDetails.isError]);
 
   useEffect(() => {
     if (bottomRef.current)
@@ -91,9 +91,10 @@ const Chat = ({ chatId, user }) => {
 
   // socket events listeners
   const alertListener = useCallback(
-    (content) => {
+    (data) => {
+      if (chatId !== data.chatId) return;
       const messageForAlert = {
-        content,
+        content: data.message,
         sender: {
           _id: Math.floor(Math.random()).toFixed(9),
           name: "Admin",
