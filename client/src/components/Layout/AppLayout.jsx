@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -6,20 +6,17 @@ import { Drawer, Grid, Skeleton } from "@mui/material";
 
 // actions
 import { useMyChatsQuery } from "../../redux/reducers/api";
-import { setIsMobileMenu } from "../../redux/reducers/misc";
+import {
+  setIsDeleteMenu,
+  setIsMobileMenu,
+  setSelectedDeleteChat,
+} from "../../redux/reducers/misc";
 import {
   incrementNotificationCount,
   setNewMessagesAlert,
 } from "../../redux/reducers/chat";
 
-// hooks
 import { useErrors, useSocketEvents } from "../../hooks/hook";
-
-// child components
-import Header from "./Header";
-import Title from "../shared/Title";
-import ChatList from "../specific/ChatList";
-import Profile from "../specific/Profile";
 import { getSocket } from "../../socket";
 import {
   NEW_MESSAGE_ALERT,
@@ -28,8 +25,17 @@ import {
 } from "../../constants/events";
 import { getOrSaveFromLocalStorage } from "../lib/features";
 
+// child components
+import Header from "./Header";
+import Title from "../shared/Title";
+import ChatList from "../specific/ChatList";
+import Profile from "../specific/Profile";
+import DeleteChatMenu from "../dialogs/DeleteChatMenu";
+
 const AppLayout = () => (WrappedComponent) => {
   return (props) => {
+    const deleteMenuAnchor = useRef(null);
+
     const params = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -78,9 +84,10 @@ const AppLayout = () => (WrappedComponent) => {
 
     useSocketEvents(socket, eventHandlers);
 
-    const handleDeleteChat = (e, _id, groupChat) => {
-      e.preventDefault();
-      console.log("Delete Chat", _id, groupChat);
+    const handleDeleteChat = (e, chatId, groupChat) => {
+      dispatch(setIsDeleteMenu(true));
+      dispatch(setSelectedDeleteChat({ chatId, groupChat }));
+      deleteMenuAnchor.current = e.currentTarget;
     };
 
     const handleMobileClose = () => {
@@ -142,6 +149,11 @@ const AppLayout = () => (WrappedComponent) => {
             <Profile user={user} />
           </Grid>
         </Grid>
+
+        <DeleteChatMenu
+          dispatch={dispatch}
+          deleteMenuAnchor={deleteMenuAnchor}
+        />
       </>
     );
   };
