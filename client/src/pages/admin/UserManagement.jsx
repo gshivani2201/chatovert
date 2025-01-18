@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Avatar, Skeleton } from "@mui/material";
 import { useFetchData } from "6pp";
 
-import { dashboardData } from "../../constants/sampleData";
 import { transformImage } from "../../components/lib/features";
 import { server } from "../../constants/config";
 import { useErrors } from "../../hooks/hook";
