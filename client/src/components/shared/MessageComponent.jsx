@@ -3,6 +3,7 @@ import { memo } from "react";
 // 3rd party lib
 import moment from "moment";
 import { Box, Typography } from "@mui/material";
+import { motion } from "framer-motion";
 
 // assets
 import { lightBlue } from "../../constants/color";
@@ -18,7 +19,9 @@ const MessageComponent = ({ message, user }) => {
   const timeAgo = moment(createdAt).fromNow();
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, x: "-100%" }}
+      whileInView={{ opacity: 1, x: 0 }}
       style={{
         alignSelf: sameSender ? "flex-end" : "flex-start",
         backgroundColor: "white",
@@ -62,7 +65,7 @@ const MessageComponent = ({ message, user }) => {
       <Typography variant="caption" color={"text.secondary"}>
         {timeAgo}
       </Typography>
-    </div>
+    </motion.div>
   );
 };
 
