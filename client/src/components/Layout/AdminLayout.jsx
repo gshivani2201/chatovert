@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation, Link as LinkComponent, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import {
   Box,
@@ -46,10 +47,10 @@ const adminTabs = [
   },
 ];
 
-const isAdmin = true;
-
 const AdminLayout = ({ children }) => {
   const [isMobile, setIsMobile] = useState(false);
+
+  const { isAdmin } = useSelector((state) => state.auth);
 
   const handleMobile = () => {
     setIsMobile((prev) => !prev);
